@@ -1,0 +1,23 @@
+{% extends 'base.html' %}
+
+{% block title %} Sign Up {% endblock title %}
+
+{% block content %}
+
+<div class="col-md-4 form-page">
+    <br>
+    <h5> Sign Up </h5>
+    <br>
+    {{ user_form.as_p }}
+    {{ user_profile_form.as_p }}
+<!--            {% for field in user_profile_form %}-->
+<!--            <tr>-->
+<!--                <th>{{ field.label_tag }}</th>-->
+<!--                <td>{{ field }} {{ field.errors }}</td>-->
+<!--            </tr>-->
+<!--            {% endfor %}-->
+<!--        </table>-->
+        <button type="submit" class="btn btn-secondary btn-sm">Submit</button>
+    </form>
+</div>
+{% endblock %}

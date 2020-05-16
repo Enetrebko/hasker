@@ -1,0 +1,26 @@
+
+
+.row-offcanvas-left
+#sidebarLeft {
+left: -50%;
+}
+
+.row-offcanvas-left.active {
+left: 50%;
+}
+
+.row-offcanvas-right
+#sidebarRight {
+right: -50%;
+}
+
+.row-offcanvas-right.active {
+right: 50%;
+}
+
+.sidebar-offcanvas {
+position: absolute;
+top: 0;
+width: 50%;
+margin-left: 10px;
+}

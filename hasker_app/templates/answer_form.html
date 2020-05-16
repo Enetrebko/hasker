@@ -1,0 +1,9 @@
+<div class="row justify-content-center">
+    <div class="col-md-10">
+    <form method="post" enctype='multipart/form-data' novalidate>
+        {% csrf_token %}
+        {{ form.as_p}}
+        <button type="submit" class="btn btn-secondary btn-sm">Submit</button>
+    </form>
+    </div>
+</div>

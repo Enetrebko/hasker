@@ -1,0 +1,22 @@
+{% extends 'base.html' %}
+
+{% block title %} Questions {% endblock title %}
+
+{% block content %}
+
+<ul class="nav justify-content-center">
+    <li class="nav-item">
+        <h5><a style="font-size:30px" class="nav-link {% if request.resolver_match.kwargs.orderby == '-created_date' %}disabled{% endif %}"
+           href="{% url 'hasker_app:index' '-created_date' %}">New questions<span class="sr-only">(current)</span>
+        </a></h5>
+    </li>
+    <li class="nav-item">
+        <h5><a style="font-size:30px" class="nav-link {% if request.resolver_match.kwargs.orderby == '-votes' %}disabled{% endif %}"
+           href="{% url 'hasker_app:index' '-votes' %}">Hot questions <span class="sr-only">(current)</span>
+        </a></h5>
+    </li>
+</ul>
+<br>
+<br>
+{% include 'questions_list.html' %}
+{% endblock content %}

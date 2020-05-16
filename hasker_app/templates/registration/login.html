@@ -1,0 +1,17 @@
+{% extends 'base.html' %}
+
+{% block title %} Login {% endblock %}
+
+{% block content %}
+
+<div class="col-md-4 form-page">
+    <br>
+    <h5> Log in </h5>
+    <br>
+    <form method="post" enctype='multipart/form-data'>
+        {% csrf_token %}
+        {{ form.as_p }}
+        <button type="submit" class="btn btn-secondary btn-sm">Login</button>
+    </form>
+</div>
+{% endblock %}

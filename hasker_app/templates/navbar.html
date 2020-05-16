@@ -1,0 +1,27 @@
+
+<nav class="navbar navbar-expand-lg navbar-light bg-light">
+  <a class="navbar-brand" href="{% url 'hasker_app:index' '-created_date' %}">HASKER</a>
+    <ul class="navbar-nav ml-auto">
+      <form class="form-inline my-2 my-lg-0" action="{% url 'hasker_app:search_results' %}" method="get">
+        <input class="form-control mr-sm-2" type="search" placeholder="Search..." aria-label="Search" name="q">
+      </form>
+      {% if user.userprofile.avatar %}
+        <img src="{{ user.userprofile.avatar.url }}" width="40" height="40" alt="">
+      {% endif %}
+      {% if user.is_authenticated %}
+        <li class="nav-item">
+          <a class="nav-link" href="{% url 'hasker_app:settings' %}">{{ user.username }}</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="{% url 'hasker_app:logout' %}">Log Out</a>
+        </li>
+      {% else %}
+        <li class="nav-item">
+          <a class="nav-link" href="{% url 'hasker_app:signup' %}">Sign Up</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="{% url 'hasker_app:login' %}">Log In</a>
+        </li>
+      {% endif %}
+    </ul>
+</nav>

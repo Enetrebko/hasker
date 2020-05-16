@@ -1,0 +1,87 @@
+{% extends 'base.html' %}]
+{% load humanize %}
+{% block title %} Answers {% endblock title %}
+
+{% block content %}
+
+<div class="col-md-8 float-left">
+    <br>
+    <h4> {{question.header}} </h4>
+    <br>
+
+    <div class="row justify-content-center">
+        <br>
+        <table class="table table-borderless">
+            <tr height="90%">
+                <td class="align-top" rowspan="2" width="10%">
+                    <p class="text-center">
+                        {% if user.is_authenticated %}
+                            <a class="arrow up" title="Like this question" href="{% url 'hasker_app:vote' 'question' question.id %}"></a>
+                        {% else %}
+                            <i class="arrow up" title="Like this question"></i>
+                        {% endif %}
+                    </p>
+                    <p class="text-center"> {{ question.votes }} </p>
+                    <p class="text-center"> <a class="arrow down" title="Don't like this question" href="{% url 'hasker_app:unvote' 'question' question.id %}"></a> </p>
+                </td>
+                <td colspan="4"> {{ question.body }} </td>
+            </tr>
+            <tr>
+                <td width="40%">
+                    {% for tag in question.tags.all %}
+                        <a class="btn btn-secondary btn-sm" href="{% url 'hasker_app:search_results' %}?q=tag:{{tag}}" role="button"> {{ tag.tag_text }} </a>
+                    {% endfor %}
+                </td>
+                <td><p class="text-right" style="font-size:15px"> Asked {{question.created_date|naturaltime}} </p></td>
+                <td width="5%"> <img src="{{ question.user.userprofile.avatar.url }}" width="30" height="30"> </td>
+                <td width="5%"> {{ question.user }} </td>
+                <td width="10%"></td>
+            </tr>
+        </table>
+    </div>
+
+    <br>
+    <h5> {{question.answers}} Answers </h5>
+    <br>
+
+    <div class="row justify-content-center">
+        <br>
+        <table class="table table-borderless">
+        {% for answer in object_list %}
+            <tr height="90%">
+                <td class="align-top" rowspan="2"  width="10%">
+                    <p class="text-center"><a class="arrow up" title="Like this answer" href="{% url 'hasker_app:vote' 'answer' answer.id %}"></a></p>
+                    <p class="text-center">{{ answer.votes }}</p>
+                    <p class="text-center"><a class="arrow down" title="Don't like this answer" href="{% url 'hasker_app:unvote' 'answer' answer.id %}"></a></p>
+                    <p class="text-center"><a title="This answer is correct!" href="{% url 'hasker_app:correct_answer' answer_id=answer.id question_id=question.id %}">
+                        {% if answer.id == question.correct_answer.id %} &#9733;
+                        {% else %}
+                            {% if question.user == user %}
+                                &#9734;
+                            {% endif %}
+                        {% endif %}
+                    </a>
+                    </p>
+                </td>
+                <td colspan="4"> {{ answer.body }} </td>
+            </tr>
+            <tr>
+                <td width="40%"></td>
+                <td><p class="text-right" style="font-size:15px"> Answered {{answer.created_date|naturaltime}} </p></td>
+                <td width="5%"> <img src="{{ answer.user.userprofile.avatar.url }}" width="30" height="30"> </td>
+                <td width="5%"><p style="font-size:15px"> {{ answer.user }} </p></td>
+                <td width="10%"></td>
+            </tr>
+            <tr class="border_bottom">
+                <td colspan="4"></td>
+            </tr>
+        {% endfor %}
+        </table>
+    </div>
+    {% include 'pagination.html' with form=form %}
+    <br>
+    {% if user.is_authenticated %}
+        {% include 'answer_form.html' with form=form %}
+    {% endif %}
+</div>
+{% endblock content %}

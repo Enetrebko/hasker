@@ -1,0 +1,30 @@
+{% block sidebar %}
+<br>
+<div class="col-md-3 float-right">
+<div class="ml-auto card w-40">
+    <div class="card-body">
+        <table class="table table-borderless">
+            <tr>
+                <td class="align-bottom" style="text-align:left;"><h5>Trending</h5></td>
+                {% if user.is_authenticated %}
+                <td style="text-align:right;"><a class="btn btn-secondary btn-sm" href="{% url 'hasker_app:ask' %}">Ask!</a></td>
+                {% endif %}
+            </tr>
+        </table>
+        <table>
+        {% for question in trending_questions %}
+            <tr height="50px">
+                <td class="align-top">
+                    <button type="button" class="btn btn-secondary" style="background-color: #b00;">{{question.votes}}</button>
+                </td>
+                <td width="5px"></td>
+                <td class="align-center">
+                    <a style="font-size:15px" href="{% url 'hasker_app:question' question.id %}">{{question.header|truncatechars:100}}</a>
+                </td>
+            </tr>
+        {% endfor %}
+        </table>
+    </div>
+</div>
+</div>
+{% endblock sidebar %}

@@ -1,0 +1,19 @@
+{% extends 'base.html' %}
+
+{% block title %} Ask {% endblock title %}
+
+{% block content %}
+
+<div class="col-md-9">
+    <br>
+    <h5> Ask a question </h5>
+    <br>
+    <div class="col-md-10">
+    <form method="post" enctype='multipart/form-data' novalidate>
+        {% csrf_token %}
+        {{form.as_p}}
+    <button type="submit" class="btn btn-secondary btn-sm">Submit</button>
+</form>
+    </div>
+</div>
+{% endblock content %}

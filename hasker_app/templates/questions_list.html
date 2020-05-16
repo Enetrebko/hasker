@@ -1,0 +1,27 @@
+{% load humanize %}
+<div class="col-md-9 float-left ">
+    <div class="row justify-content-center">
+        <div class="col-8">
+            <table class="table table-borderless">
+                {% for question in object_list %}
+                    <tr height="90%">
+                        <td class="align-middle" rowspan="2" width="5%"><p class="text-center">{{ question.votes }}</p><p>Vote{{ question.votes|pluralize }}</p></td>
+                        <td class="align-middle" rowspan="2" width="5%"><p class="text-center">{{ question.answers }}</p><p>Answer{{ question.answers|pluralize }}</p></td>
+                        <td width="60%" colspan="2"><h5><a href="{% url 'hasker_app:question' question.id %}">{{ question.header }}</a></h5>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            {% for tag in question.tags.all %}
+                                <a class="btn btn-secondary btn-sm" href="{% url 'hasker_app:search_results' %}?q=tag:{{tag}}" role="button"> {{ tag.tag_text }} </a>
+                            {% endfor %}
+                        </td>
+                        <td class="text-right" style="font-size:15px">Asked {{question.created_date|naturaltime}} {{ question.user }}</td>
+                    </tr>
+                {% endfor %}
+            </table>
+        </div>
+    </div>
+    {% include 'pagination.html' with form=form %}
+    <br>
+</div>

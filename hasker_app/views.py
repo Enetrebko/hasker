@@ -6,13 +6,12 @@ from . import models
 from django.shortcuts import redirect, get_object_or_404
 from django.db.models import Q
 from django.urls import reverse_lazy
-from django.contrib import messages
-from django.utils.translation import ugettext_lazy as _
 from django.contrib.auth import authenticate, login
 from django.core.mail import send_mail
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.views import LoginView
+from django.conf import settings
 
 
 class AskQuestionView(LoginRequiredMixin, View):
@@ -28,22 +27,24 @@ class AskQuestionView(LoginRequiredMixin, View):
     def post(self, request):
         form = self.form(request.POST)
         if form.is_valid():
-            tags = form.cleaned_data.pop('tags')
+            tags_request = form.cleaned_data.pop('tags')
             question = form.save(commit=False)
             question.user = request.user
             question.save()
-            for tag_request in tags:
+            for tag_request in tags_request:
                 tag, _ = models.Tag.objects.get_or_create(tag_text=tag_request.strip())
                 tag.save()
                 question.tags.add(tag)
-            return redirect(reverse_lazy('hasker_app:question', args=[question.pk]))
+            return redirect(reverse_lazy('hasker_app:question', kwargs={'pk': question.pk}))
         return render(request, self.template_name, context={"form": form})
 
 
-class QuestionListView(ListView):
+class QuestionView(ListView):
     paginate_by = 20
     form = forms.AnswerForm
     template_name = 'question.html'
+    email_header = 'New answer'
+    email_body = '''You've got new answer: '''
 
     def get(self, request, *args, **kwargs):
         question = get_object_or_404(models.Question, pk=self.kwargs['pk'])
@@ -65,15 +66,15 @@ class QuestionListView(ListView):
             question.answers += 1
             question.save()
             send_mail(
-                'New answer',
-                '''You've got new answer''',
-                'hasker.app@mail.ru',
+                self.email_header,
+                "".join([self.email_body, request.build_absolute_uri(question.get_absolute_url())]),
+                settings.EMAIL_HOST_USER,
                 [question.user.email],
                 fail_silently=False,)
-        return redirect(request.META.get('HTTP_REFERER'))
+        return redirect(reverse_lazy('hasker_app:question', kwargs={'pk': question.id}))
 
 
-class IndexListView(ListView):
+class IndexView(ListView):
     model = models.Question
     paginate_by = 30
     template_name = 'index.html'
@@ -90,25 +91,36 @@ def vote(request, object_type, obj_id, vote_up):
         'question': models.Question,
     }
     request_object = get_object_or_404(objects[object_type], pk=obj_id)
-    already_voted = request_object.users_voted.filter(id=request.user.id).exists()
-    if vote_up and not already_voted:
-        request_object.votes += 1
-        request_object.users_voted.add(request.user)
-    elif not vote_up and already_voted:
-        request_object.votes -= 1
-        request_object.users_voted.remove(request.user)
+    question = request_object if object_type == 'question' else request_object.question
+    already_voted_up = request_object.users_voted_up.filter(id=request.user.id).exists()
+    already_voted_down = request_object.users_voted_down.filter(id=request.user.id).exists()
+    if vote_up:
+        if already_voted_down:
+            request_object.votes += 1
+            request_object.users_voted_down.remove(request.user)
+        elif not already_voted_up:
+            request_object.votes += 1
+            request_object.users_voted_up.add(request.user)
+    else:
+        if already_voted_up:
+            request_object.votes -= 1
+            request_object.users_voted_up.remove(request.user)
+        elif not already_voted_down:
+            request_object.votes -= 1
+            request_object.users_voted_down.add(request.user)
     request_object.save()
-    return redirect(request.META.get('HTTP_REFERER'))
+    return redirect(reverse_lazy('hasker_app:question', kwargs={'pk': question.id}))
 
 
 @login_required(login_url=reverse_lazy('hasker_app:login'))
-def check_correct_answer(request, question_id, answer_id):
+def mark_correct_answer(request, question_id, answer_id):
     question = get_object_or_404(models.Question, pk=question_id)
     if question.user == request.user:
         answer = get_object_or_404(models.Answer, pk=answer_id)
         question.correct_answer = answer
         question.save()
-    return redirect(reverse_lazy('hasker_app:question', args=[request.resolver_match.kwargs['question_id']]))
+    return redirect(reverse_lazy('hasker_app:question',
+                                 kwargs={'pk': request.resolver_match.kwargs['question_id']}))
 
 
 class SearchResultsView(ListView):
@@ -137,7 +149,8 @@ class SignUpView(View):
         user_form = self.user_form()
         user_profile_form = self.user_profile_form()
         return render(request, self.template_name,
-                      context={"user_form": user_form, "user_profile_form": user_profile_form})
+                      context={"user_form": user_form,
+                               "user_profile_form": user_profile_form})
 
     def post(self, request):
         user_form = self.user_form(request.POST)
@@ -151,10 +164,9 @@ class SignUpView(View):
             new_user = authenticate(username=username, password=password)
             login(self.request, new_user)
             return redirect(reverse_lazy('hasker_app:index'))
-        else:
-            messages.error(request, _('Please correct the error below.'))
         return render(request, self.template_name,
-                      context={"user_form": user_form, "user_profile_form": user_profile_form})
+                      context={"user_form": user_form,
+                               "user_profile_form": user_profile_form})
 
 
 class CustomLoginView(LoginView):
@@ -163,7 +175,7 @@ class CustomLoginView(LoginView):
 
 class ChangeProfileView(LoginRequiredMixin, View):
 
-    user_form = forms.ChangeProfile
+    user_form = forms.ChangeProfileForm
     user_profile_form = forms.UserProfileForm
     login_url = reverse_lazy('hasker_app:login')
     template_name = 'registration/settings.html'
@@ -172,7 +184,8 @@ class ChangeProfileView(LoginRequiredMixin, View):
         user_form = self.user_form(instance=request.user)
         user_profile_form = self.user_profile_form(instance=request.user.userprofile)
         return render(request, self.template_name,
-                      context={"user_form": user_form, "user_profile_form": user_profile_form})
+                      context={"user_form": user_form,
+                               "user_profile_form": user_profile_form})
 
     def post(self, request):
         user_form = self.user_form(request.POST, instance=request.user)
@@ -181,7 +194,6 @@ class ChangeProfileView(LoginRequiredMixin, View):
             user_form.save()
             user_profile_form.save()
             return redirect(reverse_lazy('hasker_app:index'))
-        else:
-            messages.error(request, _('Please correct the error below.'))
         return render(request, self.template_name,
-                      context={"user_form": user_form, "user_profile_form": user_profile_form})
+                      context={"user_form": user_form,
+                               "user_profile_form": user_profile_form})

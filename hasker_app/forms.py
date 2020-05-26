@@ -1,9 +1,8 @@
 from django import forms
 from . import models
 from django.contrib.auth.forms import UserCreationForm
-from django.urls import reverse_lazy
 from django.contrib.auth.models import User
-from django.utils.translation import ugettext, ugettext_lazy as _
+from django.utils.translation import ugettext_lazy as _
 from django.contrib.auth.forms import AuthenticationForm, UsernameField
 
 
@@ -11,14 +10,14 @@ class MultiTagField(forms.Field):
     def to_python(self, value):
         if not value:
             return []
-        return [val.strip() for val in value.split(',')]
+        return [val.strip() for val in value.split(',') if len(val.strip()) > 0]
 
 
 class AskQuestionForm(forms.ModelForm):
 
     tags = MultiTagField(required=False,
                          label='Tags',
-                         help_text='Add up to 3 tags to describe what your question is about',
+                         help_text=_('Add up to 3 tags to describe what your question is about'),
                          widget=forms.Textarea(attrs={'placeholder': 'e.g. tag1, tag2, tag3',
                                                       'class': 'form-control', 'rows': 1}),
                          )
@@ -30,8 +29,8 @@ class AskQuestionForm(forms.ModelForm):
             'header': 'Title',
         }
         help_texts = {
-            'header': 'Be specific and imagine you’re asking a question to another person',
-            'body': 'Include all the information someone would need to answer your question'
+            'header': _('Be specific and imagine you’re asking a question to another person'),
+            'body': _('Include all the information someone would need to answer your question')
         }
         widgets = {
             'header': forms.Textarea(attrs={'placeholder': 'e.g. How to python',
@@ -42,7 +41,7 @@ class AskQuestionForm(forms.ModelForm):
     def clean_tags(self):
         data = self.cleaned_data['tags']
         if len(data) > 3:
-            raise forms.ValidationError("Enter three tags or less")
+            raise forms.ValidationError(_("Enter three tags or less"))
         return data
 
 
@@ -94,7 +93,7 @@ class CustomAuthenticationForm(AuthenticationForm):
                                )
 
 
-class ChangeProfile(forms.ModelForm):
+class ChangeProfileForm(forms.ModelForm):
 
     email = forms.EmailField(label='Email',
                              max_length=100,

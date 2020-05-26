@@ -16,13 +16,19 @@
                 <td class="align-top" rowspan="2" width="10%">
                     <p class="text-center">
                         {% if user.is_authenticated %}
-                            <a class="arrow up" title="Like this question" href="{% url 'hasker_app:vote' 'question' question.id %}"></a>
+                            <a class="arrow up" title="Like this question" href="{% url 'hasker_app:vote_up' 'question' question.id %}"></a>
                         {% else %}
-                            <i class="arrow up" title="Like this question"></i>
+                            <a class="arrow up not-active" title="Like this question" href="{% url 'hasker_app:vote_up' 'question' question.id %}"></a>
                         {% endif %}
                     </p>
                     <p class="text-center"> {{ question.votes }} </p>
-                    <p class="text-center"> <a class="arrow down" title="Don't like this question" href="{% url 'hasker_app:unvote' 'question' question.id %}"></a> </p>
+                    <p class="text-center">
+                        {% if user.is_authenticated %}
+                            <a class="arrow down" title="Don't like this question" href="{% url 'hasker_app:vote_down' 'question' question.id %}"></a>
+                        {% else %}
+                            <a class="arrow down not-active" title="Like this question" href="{% url 'hasker_app:vote_down' 'question' question.id %}"></a>
+                        {% endif %}
+                    </p>
                 </td>
                 <td colspan="4"> {{ question.body }} </td>
             </tr>
@@ -50,17 +56,36 @@
         {% for answer in object_list %}
             <tr height="90%">
                 <td class="align-top" rowspan="2"  width="10%">
-                    <p class="text-center"><a class="arrow up" title="Like this answer" href="{% url 'hasker_app:vote' 'answer' answer.id %}"></a></p>
-                    <p class="text-center">{{ answer.votes }}</p>
-                    <p class="text-center"><a class="arrow down" title="Don't like this answer" href="{% url 'hasker_app:unvote' 'answer' answer.id %}"></a></p>
-                    <p class="text-center"><a title="This answer is correct!" href="{% url 'hasker_app:correct_answer' answer_id=answer.id question_id=question.id %}">
-                        {% if answer.id == question.correct_answer.id %} &#9733;
+                    <p class="text-center">
+                        {% if user.is_authenticated %}
+                            <a class="arrow up" title="Like this answer" href="{% url 'hasker_app:vote_up' 'answer' answer.id %}"></a>
                         {% else %}
-                            {% if question.user == user %}
-                                &#9734;
-                            {% endif %}
+                            <a class="arrow up not-active" title="Like this answer" href="{% url 'hasker_app:vote_up' 'answer' answer.id %}"></a>
                         {% endif %}
-                    </a>
+                    </p>
+                    <p class="text-center">{{ answer.votes }}</p>
+                    <p class="text-center">
+                        {% if user.is_authenticated %}
+                            <a class="arrow down" title="Don't like this answer" href="{% url 'hasker_app:vote_down' 'answer' answer.id %}"></a>
+                        {% else %}
+                            <a class="arrow down not-active" title="Don't like this answer" href="{% url 'hasker_app:vote_down' 'answer' answer.id %}"></a>
+                        {% endif %}
+                    </p>
+                    <p class="text-center">
+                        {% if user.is_authenticated %}
+                            <a title="This answer is correct!" href="{% url 'hasker_app:correct_answer' answer_id=answer.id question_id=question.id %}">
+                            {% if answer.id == question.correct_answer.id %} &#9733;
+                            {% else %}
+                                {% if question.user == user %}
+                                    &#9734;
+                                {% endif %}
+                            {% endif %}
+                            </a>
+                        {% elif  answer.id == question.correct_answer.id %}
+                            <a class="not-active" title="This answer is correct!" href="{% url 'hasker_app:correct_answer' answer_id=answer.id question_id=question.id %}">
+                            &#9733;
+                            </a>
+                        {% endif %}
                     </p>
                 </td>
                 <td colspan="4"> {{ answer.body }} </td>

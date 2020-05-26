@@ -8,15 +8,10 @@
     <br>
     <h5> Sign Up </h5>
     <br>
-    {{ user_form.as_p }}
-    {{ user_profile_form.as_p }}
-<!--            {% for field in user_profile_form %}-->
-<!--            <tr>-->
-<!--                <th>{{ field.label_tag }}</th>-->
-<!--                <td>{{ field }} {{ field.errors }}</td>-->
-<!--            </tr>-->
-<!--            {% endfor %}-->
-<!--        </table>-->
+    <form method="post" enctype='multipart/form-data'>
+        {% csrf_token %}
+        {{ user_form.as_p }}
+        {{ user_profile_form.as_p }}
         <button type="submit" class="btn btn-secondary btn-sm">Submit</button>
     </form>
 </div>

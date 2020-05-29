@@ -130,7 +130,7 @@ class SignUpFormTest(TestCase):
         self.assertIn('Enter a valid email address.', form.errors['email'][0])
 
     def test_username_already_exists(self):
-        User.objects.create(username='user', email='aa@bb.cc', password='pwd123456')
+        User.objects.create(username='testuser', email='aa@bb.cc', password='pwd123456')
         data = {'username': 'testuser',
                 'email': 'aa@bb.cc',
                 'password1': 'pwd123456',

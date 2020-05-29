@@ -14,7 +14,7 @@ install:
 before_script:
   - psql -c "CREATE DATABASE hasker_db;" -U postgres
   - python manage.py migrate
-  - python manage.py collectstatic
+  - python manage.py collectstatic --noinput
 
 script:
   - python manage.py test

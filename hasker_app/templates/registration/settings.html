@@ -13,7 +13,7 @@
         {{ user_form.as_p }}
         <p><label for="id_avatar">Avatar:</label>
         {% if user.userprofile.avatar %}
-        <p><img src="{{ user.userprofile.avatar.url }}" width="100" height="100"></p>
+        <p><img src="{{ user.userprofile.image_url }}" width="100" height="100"></p>
         {% endif %}
         <p> Change: <input type="file" name="avatar" accept="image/*" id="id_avatar"></p>
         <button type="submit" class="btn btn-secondary btn-sm">Submit</button>

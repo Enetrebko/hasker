@@ -1,3 +1,4 @@
+import os
 from django.db import models
 from django.utils import timezone
 from django.conf import settings
@@ -49,4 +50,11 @@ class Answer(models.Model):
 
 class UserProfile(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
-    avatar = models.ImageField(upload_to='pictures/', default='pictures/default.jpg')
+    avatar = models.ImageField(upload_to='pictures/', blank=True)
+
+    @property
+    def image_url(self):
+        if self.avatar:
+            return self.avatar.url
+        else:
+            return os.path.join(settings.STATIC_URL, 'img', 'default.jpeg')

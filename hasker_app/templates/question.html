@@ -39,7 +39,7 @@
                     {% endfor %}
                 </td>
                 <td><p class="text-right" style="font-size:15px"> Asked {{question.created_date|naturaltime}} </p></td>
-                <td width="5%"> <img src="{{ question.user.userprofile.avatar.url }}" width="30" height="30"> </td>
+                <td width="5%"> <img src="{{ question.user.userprofile.image_url }}" width="30" height="30"> </td>
                 <td width="5%"> {{ question.user }} </td>
                 <td width="10%"></td>
             </tr>
@@ -93,7 +93,7 @@
             <tr>
                 <td width="40%"></td>
                 <td><p class="text-right" style="font-size:15px"> Answered {{answer.created_date|naturaltime}} </p></td>
-                <td width="5%"> <img src="{{ answer.user.userprofile.avatar.url }}" width="30" height="30"> </td>
+                <td width="5%"> <img src="{{ answer.user.userprofile.image_url }}" width="30" height="30"> </td>
                 <td width="5%"><p style="font-size:15px"> {{ answer.user }} </p></td>
                 <td width="10%"></td>
             </tr>

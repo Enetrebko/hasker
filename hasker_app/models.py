@@ -1,4 +1,3 @@
-import os
 from django.db import models
 from django.utils import timezone
 from django.conf import settings
@@ -57,4 +56,4 @@ class UserProfile(models.Model):
         if self.avatar:
             return self.avatar.url
         else:
-            return os.path.join(settings.STATIC_URL, 'img', 'default.jpeg')
+            return settings.STATIC_URL + 'img/default.jpeg'

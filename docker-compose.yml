@@ -33,6 +33,7 @@ services:
       - static:/static
       - media:/media
       - ./compose/nginx:/etc/nginx/conf.d
+      - ./logs:/var/log/nginx
     depends_on:
       - hasker
 

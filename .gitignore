@@ -2,4 +2,5 @@
 *pyc
 __pycache__
 local.py
-/hasker_app/media/
+/media/
+/logs/

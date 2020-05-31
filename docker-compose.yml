@@ -1,0 +1,42 @@
+version: '3'
+
+services:
+
+  hasker:
+    build:
+      context: .
+      dockerfile: ./compose/django/Dockerfile
+    image: hasker_prod
+    depends_on:
+      - db
+    env_file:
+      - .env
+    volumes:
+      - static:/static
+      - media:/media
+    command: /start
+
+  db:
+    image: postgres:latest
+    environment:
+      - POSTGRES_USER=${HASKER_DATABASE_USER}
+      - POSTGRES_PASSWORD=${HASKER_DATABASE_PASSWORD}
+      - POSTGRES_DB=${HASKER_DATABASE_NAME}
+    volumes:
+      - postgres_data:/var/lib/postgresql/data/
+
+  ws:
+    image: nginx:latest
+    ports:
+      - "8000:80"
+    volumes:
+      - static:/static
+      - media:/media
+      - ./compose/nginx:/etc/nginx/conf.d
+    depends_on:
+      - hasker
+
+volumes:
+  static:
+  media:
+  postgres_data:

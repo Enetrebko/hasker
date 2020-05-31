@@ -4,6 +4,9 @@ DEBUG = True
 
 SECRET_KEY = '7#_o8oc2od1un53#se+y0n-qj-@^7kzbx7$wm^lyob(v%z=7x*'
 
+STATIC_ROOT = os.path.join(BASE_DIR, 'hasker_app/static')
+MEDIA_ROOT = os.path.join(BASE_DIR, 'hasker_app/media')
+
 ALLOWED_HOSTS = ['*']
 
 DATABASES = {

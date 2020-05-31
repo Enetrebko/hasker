@@ -1,6 +1,7 @@
 .idea
 *pyc
 __pycache__
-local.py
+settings/local.py
 /media/
 /logs/
+.env
